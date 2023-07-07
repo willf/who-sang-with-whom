@@ -1,0 +1,403 @@
+body {
+	margin: 0px 0px 0px 0px;
+	background-color: #E3F0C1;
+  background-position: center;
+	background-repeat: repeat-y;
+	text-align: center;
+}
+
+/***********************************
+	CONTAINERS
+***********************************/
+
+#main {
+	width: 720px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: left;
+	background-color: #FFFFFF;
+}
+
+#navigation {
+	float: left;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	color: #490000;
+	background-color: #FAFAFA;
+	text-decoration: none;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 5px 15px 5px;
+	width: 150px;
+	border-color: #CCCCCC;
+	border-style: solid;
+	border-width: 0px 1px 1px 0px;
+	text-align: right;
+}
+
+#content {
+	margin: 0px 0px 0px 170px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 70%;
+	color: #555555;
+	text-decoration: none;
+	width: 520px;
+	text-align: left;
+	padding: 20px 5px 5px 5px;
+	background-color: #FFFFFF;
+}
+
+#footer {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 70%;
+	color: #555555;
+	padding: 40px 0px 10px 0px;
+	text-align: center;
+	clear: left;
+	background-color: #FFFFFF;
+}
+
+/***********************************
+	LINKS
+***********************************/
+
+a {
+	color: #555555;
+	text-decoration: underline;
+}
+
+a:hover {
+	color: #555555;
+}
+
+a.small-navigation {
+	color: #555555;
+	text-decoration: none;
+}
+
+a.small-navigation:hover {
+	color: #FF9900;
+}
+
+a.navigation {
+	color: #555555;
+	text-decoration: none;
+	display: block;
+	padding: 6px 0px 8px 5px;
+	text-align: left;
+	font-weight: bold;
+	font-size: 80%;
+
+	border-width: 0px 0px 1px 5px;
+	border-color: #DEDEDE #DEDEDE #CCCCCC #DEDEDE;
+	border-style: none none solid solid;
+}
+
+a.navigation:hover {
+	color: #960000;
+	border-color: #FF9900 #FF9900 #FF9900 #FF9900;
+	background-color: #EFEFEF;
+}
+
+/***********************************
+	MISCELLANEOUS
+***********************************/
+#header {
+	padding: 5px 0px 5px 0px;
+	border-color: #555555;
+	border-style: solid;
+	border-width: 0px 0px 1px 0px;
+	background-color: #FFFFFF;
+}
+
+hr {
+	width: 100%;
+	height: 0px;
+	text-align: center;
+	border-color: #CCCCCC;
+	border-style: dashed;
+	border-width: 0px 0px 1px 0px;
+}
+
+h1 {
+	color: #960000;
+	font-size: 150%;
+	text-decoration: none;
+	text-align: left;
+	margin: 0px 0px 5px 0px;
+	font-weight: bold;
+	padding: 2px 25px 0px 0px;
+	border-width: 0px 0px 1px 0px;
+	border-style: solid;
+	border-color: #FF9900;
+	background-color: #FFFFFF;
+}
+
+h2 {
+	color: #555555;
+	font-size: 120%;
+	text-decoration: none;
+	text-align: left;
+	margin: 0px 0px 15px 0px;
+	font-weight: bold;
+	padding: 2px 50px 0px 0px;
+	border-width: 0px 0px 0px 0px;
+	border-style: solid;
+	border-color: #FF9900;
+	background-color: #FFFFFF;
+}
+
+h3 {
+	font-size: 100%;
+	font-style: italic;
+}
+
+p {
+	padding: 0px 0px 0px 0px;
+	margin-bottom: 10px;
+}
+
+dt {
+	font-weight: bold;
+}
+
+dd {
+	display: block;
+	padding-bottom: 10px;
+}
+
+blockquote {
+	margin: 0px 36px 10px 36px;
+	padding: 5px 5px 5px 5px;
+	border-width: 1px 1px 1px 1px;
+	border-style: solid;
+	border-color: #999999;
+	background-color: #F6F6F6;
+}
+
+ul.socials li {
+    padding-bottom: 10px;
+}
+
+/***********************************
+	Minutes search application
+***********************************/
+
+table.MinLstTable,
+tr.MinLstRow,
+td.MinLstItem,
+td.MinLstDate,
+tr.MinLstRow,
+td.MinLstHeadCell {
+	border: 0pt;
+	margin: 0pt;
+	padding: 0pt;
+}
+
+td.MinLstItem,
+td.MinLstDate {
+	vertical-align: top;
+	padding-bottom: 3pt;
+
+	/* first-line-indent: 16pt; */
+}
+
+td.MinLstDate {
+	white-space:nowrap;
+	padding-left: 5pt;
+}
+
+/*
+h1.MinutesYearHead,
+div.Minutes,
+div.MinutesBody,
+*/
+
+div.Minutes {
+	background-color: #FAFAFA;
+	padding: 10pt;
+	border: 1pt solid #555555;;
+}
+
+h2.MinutesTitle,
+h3.MinutesLocation,
+h3.MinutesDate,
+h4.MinutesDateDivider,
+ul.MinutesBulletList,
+li.MinutesBullet,
+ol.MinutesOrderedList,
+li.MinutesOrderedItem,
+p.MinutesText {
+	background-color: transparent;
+	font-family: JansonText,Times;
+	font-style: normal;
+	margin: 0pt;
+	padding: 0pt;
+}
+
+h2.MinutesTitle {
+	text-align: center;
+	font-weight: bold;
+	font-size: 14pt;
+}
+
+h3.MinutesLocation  {
+	text-align: center;
+	font-size: 11pt;
+	font-weight: bold;
+}
+
+h3.MinutesDate {
+	text-align: center;
+	font-size: 11pt;
+	font-weight: bold;
+	padding-bottom: 5pt;
+}
+
+h4.MinutesDateDivider {
+	text-align: center;
+	font-size: 10pt;
+	font-weight: bold;
+	padding: 3pt;
+}
+
+li.MinutesBullet,
+li.MinutesOrderedItem,
+p.MinutesText {
+	font-size: 10pt;
+	padding-bottom: 4pt;
+}
+
+b.MinutesSearchResult {
+	background-color: #FFFF00;
+}
+
+.corrected {
+	color: green;
+}
+
+ul.MinutesBulletList,
+ol.MinutesOrderedList {
+	margin-left: 12pt;
+}
+
+/***********************************
+	Minutes Statistics application
+***********************************/
+
+table.MinStatTable,
+tr.MinStatHeadRow,
+th.MinStatHead,
+a.MinStatColLink,
+a.MinStatColLinkSelected,
+a.MinStatsOption,
+a.MinStatsOptionSelected
+{
+	border: 0pt;
+	padding: 0pt;
+	margin: 0pt;
+}
+
+a.MinStatColLink,
+a.MinStatColLinkSelected,
+a.MinStatsOption,
+a.MinStatsOptionSelected
+{
+	padding: 0pt 4pt 1pt 4pt;
+	text-decoration: none;
+	border: 1px solid gray;
+	font-weight: bold;
+}
+
+a.MinStatColLink:hover,
+a.MinStatColLinkSelected:hover,
+a.MinStatsOption:hover,
+a.MinStatsOptionSelected:hover
+{
+	color: #DD0000;
+	border-color: #DD0000;
+}
+
+a.MinStatColLinkSelected,
+a.MinStatsOptionSelected
+{
+	color: #960000;
+	border-color: #960000;
+}
+
+table.MinStatTable td
+{
+	vertical-align: top;
+	text-align: right;
+	border-bottom: 1pt solid #EEEEEE;
+}
+
+table.MinStatTable td, table.MinStatTable th
+{
+	font-size: 80%;
+}
+
+/* Song ranks */
+table.MinStatTable b
+{
+	color: #960000;
+}
+
+/* Song counts */
+table.MinStatTable td i
+{
+	font-style: normal;
+}
+
+table.MinStatTable td a
+{
+	text-decoration: underline;
+	font-weight: bold;
+}
+
+
+table.MinStatTable td a:hover
+{
+	color: #DD0000;
+}
+
+/* Press page styles */
+span.prpull
+{
+  font-size: 125%;
+  color: #960000;
+}
+
+span.prpull:before
+{
+  content: open-quote;
+}
+
+span.prpull:after
+{
+  content: close-quote;
+}
+
+span.nprpull
+{
+  font-size: 125%;
+  color: #960000;
+}
+
+p.pr
+{
+ font-size: 120%;
+}
+a.pr
+{
+  text-decoration: none;
+}
+
+/* Minutes page */
+
+ul.book_link_list {
+  -webkit-column-count: 6;
+  -moz-column-count: 6;
+  column-count: 6;
+
+  list-style-type: none;
+}
