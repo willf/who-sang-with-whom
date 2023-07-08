@@ -5,6 +5,12 @@ import difflib
 import json
 import sys
 
+# This is a script that takes a list of leaders and returns a list of
+# singings that they have all led at together
+# It's a CLI version of the web app
+# Usage: python who_sang_with_whom.py leader1 leader2 leader3
+# For example: python who_sang_with_whom.py "Will Fitzgerald" "Samuel Sommers" | jq .
+# The output is a json object with two keys: singers and singings
 
 def best_match(leader, all_leaders):
     matches = difflib.get_close_matches(leader, all_leaders, 1)
