@@ -18,7 +18,8 @@ def get_leaders_and_minutes_info():
 	    leaders.name as leader,
 	    minutes.name as singing,
 	    minutes.Location as location,
-	    minutes.Date as date_string
+	    minutes.Date as date_string,
+        minutes.id-1 as minutes_number
     FROM
 	    leaders
     JOIN
@@ -29,10 +30,10 @@ def get_leaders_and_minutes_info():
     """
     db = open_db()
     cursor = db.execute(query)
-    for (leader, singing, location, date_string) in cursor:
+    for (leader, singing, location, date_string, minutes_number) in cursor:
         corrected_date_string = correct_date_string(date_string)
         parsed = parse_date_string(corrected_date_string)
-        list_of_leaders.append((leader, singing, location, corrected_date_string, parsed.strftime('%Y-%m-%d')))
+        list_of_leaders.append((leader, singing, location, corrected_date_string, parsed.strftime('%Y-%m-%d'), minutes_number))
     return list_of_leaders
 
 def find_first_month(string):
@@ -81,29 +82,29 @@ def correct_date_string(date_string):
     else:
         return date_string
 
-def make_key(singing, location, date_string, date):
+def make_key(singing, location, date_string, date, minutes_number):
     # return as a string
-    return "\t".join([singing, location, date_string, date])
+    return "\t".join([singing, location, date_string, date, str(minutes_number)])
 
 infos = get_leaders_and_minutes_info()
 
 # create a index for each singing, which is (singing, location, corrected_date_string, date)
 index_to_singing = {}
 singing_to_index = {}
-current_index = 0
-for (_, singing, location, date_string, date) in infos:
-    key = make_key(singing, location, date_string, date)
+
+for (_, singing, location, date_string, date, minutes_number) in infos:
+    key = make_key(singing, location, date_string, date, minutes_number)
     index = singing_to_index.get(key)
     if index is None:
-        index = current_index
+        index = minutes_number
         singing_to_index[key] = index
         index_to_singing[index] = key
-        current_index += 1
+
 
 # create an index from each leader to a list of all the singings they led
 leader_to_singings = {}
-for (leader, singing, location, date_string, date) in infos:
-    key = make_key(singing, location, date_string, date)
+for (leader, singing, location, date_string, date, minutes_number) in infos:
+    key = make_key(singing, location, date_string, date, minutes_number)
     index = singing_to_index[key]
     singings = leader_to_singings.get(leader)
     if singings is None:
