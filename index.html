@@ -86,6 +86,7 @@
       <div id="tt-autoselect-singer-3" class="autocomplete-wrapper"></div>
      <button onclick="getSharedSingings()">Get shared singings</button>
     <div id="results"></div>
+    <div id="bookmark"></div>
   <div id="footer">
     <p>Made with ❤️ by <a href="https://www.entish.org">Will Fitzgerald</a>. Source code available on <a href="https://github.com/willf/who-sang-with-whom">GitHub</a>. Made possible because of the great work of <a href="https://github.com/marktgodfrey/fasolaminutes_parsing">Mark Godfrey</a>. Autocomplete library from <a href="https://github.com/alphagov/accessible-autocomplete">The UK Government Digital Service</a>.</p>
   </div>
@@ -97,6 +98,13 @@
 const leadersToSingings = whoSangWithWhom['leader_to_singings'];
 const allLeaders = Object.keys(leadersToSingings);
 const singings = whoSangWithWhom['index_to_singing'];
+
+const params = new Proxy(new URLSearchParams(window.location.search), {
+    get: (searchParams, prop) => searchParams.get(prop),
+  });
+
+const queriedSingers = params.singers ? params.singers.split(',').map((singer) => singer.trim()) : [];
+const queriedLeaders = queriedSingers.filter((singer) => allLeaders.includes(singer));
 
 function safeIndex(list, item) {
   const index = list.indexOf(item);
@@ -117,6 +125,9 @@ function sharedSingings(leaders) {
     return { singers: leaders, singings: [] };
   }
   const sharedSingings = Array.from(indexes).map((index) => singings[index]);
+
+
+
 
   // each singing is separated by a tab. split
   const sharedSingingsArray = sharedSingings.map((singing) => singing.split('\t'));
@@ -151,6 +162,7 @@ function getSharedSingings() {
     return;
   }
 
+
   const table = document.createElement('table');
   table.innerHTML = `
     <thead>
@@ -172,7 +184,17 @@ function getSharedSingings() {
     </tbody>
   `;
   resultsDiv.appendChild(table);
+
+  // now create a bookmarkable permalink
+  const bookmarkDiv = document.getElementById('bookmark');
+  const bookmark = window.location.href.split('?')[0] + '?' + new URLSearchParams({ singers: singers.join(',') });
+
+  bookmarkDiv.innerHTML = `<p>
+  <a href="${bookmark}">Permanent Link</a>
+  </p>`;
+
 };
+
 
 
 </script>
@@ -186,7 +208,7 @@ function getSharedSingings() {
         id: id,
         minLength: 3,
         source: allLeaders,
-        defaultValue: 'Singer 1'
+        defaultValue: queriedLeaders.length > 0 ? queriedLeaders[0] : ""
       })
       element = document.querySelector('#tt-autoselect-singer-2')
       id = 'autocomplete-autoselect-singer-2'
@@ -196,7 +218,7 @@ function getSharedSingings() {
         id: id,
         minLength: 3,
         source: allLeaders,
-        defaultValue: 'Singer 2'
+        defaultValue: queriedLeaders.length > 1 ? queriedLeaders[1] : ""
       })
       element = document.querySelector('#tt-autoselect-singer-3')
       id = 'autocomplete-autoselect-singer-3'
@@ -205,8 +227,13 @@ function getSharedSingings() {
         element: element,
         id: id,
         minLength: 3,
-        source: allLeaders
+        source: allLeaders,
+        defaultValue: queriedLeaders.length > 2 ? queriedLeaders[2] : ""
       })
+if (queriedLeaders.length > 0) {
+  getSharedSingings();
+}
+
 </script>
 
 </body>
