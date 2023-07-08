@@ -15,3 +15,17 @@ create a sqlite db called `minutes.db` in the `fasolaminutes_parsing` directory.
 6. In `index.html`, change the line `const whoSangWithWhom =` to a paste of the contents of `who_sang_with_whom.json`
 7. Test locally (just `open index.html` in a browser)
 8. Commit and push the changes to this repo
+
+## CLI usage
+
+There is a Python CLI version you can use, too.
+
+```
+python who_sang_with_whom.py leader1 leader2 leader3
+```
+
+For example:
+
+```
+python who_sang_with_whom.py "Will Fitzgerald" "Samuel Sommers"
+```
