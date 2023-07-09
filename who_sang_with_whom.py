@@ -58,12 +58,9 @@ def shared_singings(leaders):
         return {'singers': corrected_leaders, 'singings': []}
     shared_singings = [singings[str(index)] for index in indexes]
 
-    # each singing is separated by a tab. split
-    shared_singings = [singing.split('\t') for singing in shared_singings]
     # the last element is the date, so sort by that
-    shared_singings.sort(key=lambda x: x[-1])
+    shared_singings.sort(key=lambda x: x["id"])
     # make each shared singing an object
-    shared_singings = [{'singing': singing[0], 'location': singing[1], 'date': singing[3]} for singing in shared_singings]
     return {'singers': corrected_leaders, 'singings': shared_singings}
 
 
