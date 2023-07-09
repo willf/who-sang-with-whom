@@ -1,0 +1,65 @@
+
+html {
+  color: #111;
+  background: #FFF;
+  font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, 'helvetica neue', helvetica, ubuntu, roboto, noto, 'segoe ui', arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+body {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: normal;
+}
+
+label {
+  display: block;
+  margin-bottom: .5rem;
+}
+
+code {
+  padding-left: .5em;
+  padding-right: .5em;
+  background: #EFEFEF;
+  font-weight: normal;
+  font-family: monospace;
+}
+
+main {
+  max-width: 40em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.autocomplete-wrapper {
+  max-width: 20em;
+}
+
+button {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+th {
+  text-align: left;
+  background-color: lightgray;
+}
+
+td {
+  vertical-align: top;
+}
+
+#footer {
+  border-top: 1px solid lightgray;
+  margin-top: 2rem;
+  font-size: 0.8rem;
+}
+
+a {
+  color: darkred;
+  text-decoration: underline;
+}
