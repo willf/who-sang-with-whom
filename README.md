@@ -12,7 +12,7 @@ https://willf.github.io/who-sang-with-whom/
 create a sqlite db called `minutes.db` in the `fasolaminutes_parsing` directory.
 4. Copy `fasolaminutes_parsing/minutes.db` to `who-sang-with-whom/minutes.db`
 5. Run `python create_who_sang_with_whom.py > who_sang_with_whom.json` You might have to add exceptions to the `correct_date_string` function in `create_who_sang_with_whom.py` for oddball unparseable dates.
-6. In `index.html`, change the line `const whoSangWithWhom =` to a paste of the contents of `who_sang_with_whom.json`
+6. In `assets/js/app.js`, change the line `const whoSangWithWhom =` to a paste of the contents of `who_sang_with_whom.json`
 7. Test locally (just `open index.html` in a browser)
 8. Commit and push the changes to this repo
 
