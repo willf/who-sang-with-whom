@@ -83434,7 +83434,7 @@ const whoSangWithWhom = {
   },
 };
 const leadersToSingings = whoSangWithWhom["leader_to_singings"];
-const allLeaders = Object.keys(leadersToSingings);
+const allLeaders = Object.keys(leadersToSingings).sort();
 const singings = whoSangWithWhom["index_to_singing"];
 
 const params = new Proxy(new URLSearchParams(window.location.search), {
@@ -83549,6 +83549,14 @@ function getSharedSingings() {
 </p>`;
 }
 
+function suggest(query, populateResults) {
+  query = query.trim().toLowerCase();
+  const results = allLeaders.filter((leader) =>
+    leader.toLowerCase().includes(query)
+  );
+  populateResults(results);
+}
+
 element = document.querySelector("#tt-autoselect-singer-1");
 id = "autocomplete-autoselect-singer-1";
 accessibleAutocomplete({
@@ -83556,7 +83564,7 @@ accessibleAutocomplete({
   element: element,
   id: id,
   minLength: 3,
-  source: allLeaders,
+  source: suggest,
   defaultValue: queriedLeaders.length > 0 ? queriedLeaders[0] : "",
 });
 element = document.querySelector("#tt-autoselect-singer-2");
@@ -83566,7 +83574,7 @@ accessibleAutocomplete({
   element: element,
   id: id,
   minLength: 3,
-  source: allLeaders,
+  source: suggest,
   defaultValue: queriedLeaders.length > 1 ? queriedLeaders[1] : "",
 });
 element = document.querySelector("#tt-autoselect-singer-3");
@@ -83576,7 +83584,7 @@ accessibleAutocomplete({
   element: element,
   id: id,
   minLength: 3,
-  source: allLeaders,
+  source: suggest,
   defaultValue: queriedLeaders.length > 2 ? queriedLeaders[2] : "",
 });
 if (queriedLeaders.length > 0) {
