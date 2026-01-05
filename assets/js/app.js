@@ -83503,10 +83503,27 @@ function getSharedSingings() {
     resultsDiv.innerHTML = `<p>Enter at least one singer, please.</p>`;
     return;
   }
+  const stats = singers
+    .map((singer) => {
+      const count = leadersToSingings[singer]
+        ? leadersToSingings[singer].length
+        : 0;
+      return `${singer} led at ${count} ${
+        count === 1 ? "singing" : "singings"
+      }.`;
+    })
+    .join(" ");
+
+  const commonText =
+    singers.length > 1
+      ? ` They have ${singings.length} shared ${
+          singings.length === 1 ? "singing" : "singings"
+        }.`
+      : "";
+
+  resultsDiv.innerHTML = `<p>${stats}${commonText}</p>`;
+
   if (singings.length === 0) {
-    resultsDiv.innerHTML = `<p>No shared singings found for ${singers.join(
-      ", "
-    )}.</p>`;
     return;
   }
 
