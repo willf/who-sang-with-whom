@@ -83444,9 +83444,118 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
 const queriedSingers = params.singers
   ? params.singers.split(",").map((singer) => singer.trim())
   : [];
-const queriedLeaders = queriedSingers.filter((singer) =>
-  allLeaders.includes(singer)
-);
+
+const aliasMap = {};
+if (params.aliases) {
+  try {
+    const parsedAliases = JSON.parse(params.aliases);
+    Object.assign(aliasMap, parsedAliases);
+  } catch (e) {
+    console.error("Failed to parse aliases from URL", e);
+  }
+}
+
+function getSingingsForLeader(leader) {
+  let singings = leadersToSingings[leader] || [];
+  if (aliasMap[leader]) {
+    aliasMap[leader].forEach((alias) => {
+      if (leadersToSingings[alias]) {
+        singings = singings.concat(leadersToSingings[alias]);
+      }
+    });
+  }
+  return [...new Set(singings)];
+}
+
+function jaroWinkler(s1, s2) {
+  if (s1.length === 0 || s2.length === 0) return 0;
+
+  const matchWindow = Math.floor(Math.max(s1.length, s2.length) / 2) - 1;
+  const s1Matches = new Array(s1.length).fill(false);
+  const s2Matches = new Array(s2.length).fill(false);
+  let matches = 0;
+  let transpositions = 0;
+
+  for (let i = 0; i < s1.length; i++) {
+    const start = Math.max(0, i - matchWindow);
+    const end = Math.min(i + matchWindow + 1, s2.length);
+
+    for (let j = start; j < end; j++) {
+      if (s2Matches[j]) continue;
+      if (s1[i] !== s2[j]) continue;
+      s1Matches[i] = true;
+      s2Matches[j] = true;
+      matches++;
+      break;
+    }
+  }
+
+  if (matches === 0) return 0;
+
+  let k = 0;
+  for (let i = 0; i < s1.length; i++) {
+    if (!s1Matches[i]) continue;
+    while (!s2Matches[k]) k++;
+    if (s1[i] !== s2[k]) transpositions++;
+    k++;
+  }
+  transpositions /= 2;
+
+  const jaro =
+    (matches / s1.length +
+      matches / s2.length +
+      (matches - transpositions) / matches) /
+    3;
+
+  let prefix = 0;
+  while (prefix < 4 && s1[prefix] === s2[prefix]) prefix++;
+
+  return jaro + prefix * 0.1 * (1 - jaro);
+}
+
+function toLastNameFirst(name) {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length < 2) return name;
+  const last = parts.pop();
+  return last + " " + parts.join(" ");
+}
+
+function findSimilarLeaders(leader) {
+  const similar = [];
+  const threshold = 0.95;
+  const leaderLower = leader.toLowerCase();
+  const leaderLNF = toLastNameFirst(leaderLower);
+
+  for (const other of allLeaders) {
+    if (other === leader) continue;
+    if (Math.abs(other.length - leader.length) > 8) continue;
+
+    const otherLower = other.toLowerCase();
+    const distNormal = jaroWinkler(leaderLower, otherLower);
+
+    const otherLNF = toLastNameFirst(otherLower);
+    const distLNF = jaroWinkler(leaderLNF, otherLNF);
+
+    const maxScore = Math.max(distNormal, distLNF);
+
+    if (maxScore >= threshold) {
+      similar.push({ name: other, score: maxScore });
+    }
+  }
+
+  similar.sort((a, b) => b.score - a.score);
+  return similar;
+}
+
+window.addAlias = function (primary, alias) {
+  if (!aliasMap[primary]) {
+    aliasMap[primary] = [];
+  }
+  if (!aliasMap[primary].includes(alias)) {
+    aliasMap[primary].push(alias);
+  }
+  getSharedSingings();
+};
 
 function safeIndex(list, item) {
   const index = list.indexOf(item);
@@ -83455,13 +83564,12 @@ function safeIndex(list, item) {
 
 function sharedSingings(leaders) {
   // now we have a list of leaders, and we want to find all the singings they have in common
-  let indexes = new Set(leadersToSingings[leaders[0]]);
+  let indexes = new Set(getSingingsForLeader(leaders[0]));
   for (let i = 1; i < leaders.length; i++) {
     // get the set intersection of the indexes
+    const leaderSingings = getSingingsForLeader(leaders[i]);
     indexes = new Set(
-      [...indexes].filter((index) =>
-        leadersToSingings[leaders[i]].includes(index)
-      )
+      [...indexes].filter((index) => leaderSingings.includes(index))
     );
   }
 
@@ -83505,12 +83613,8 @@ function getSharedSingings() {
   }
   const stats = singers
     .map((singer) => {
-      const count = leadersToSingings[singer]
-        ? leadersToSingings[singer].length
-        : 0;
-      return `${singer} led at ${count} ${
-        count === 1 ? "singing" : "singings"
-      }.`;
+      const count = getSingingsForLeader(singer).length;
+      return `${singer} led ${count} ${count === 1 ? "singing" : "singings"}.`;
     })
     .join(" ");
 
@@ -83521,9 +83625,49 @@ function getSharedSingings() {
         }.`
       : "";
 
-  resultsDiv.innerHTML = `<p>${stats}${commonText}</p>`;
+  const suggestions = [];
+  singers.forEach((singer) => {
+    const currentAliases = aliasMap[singer] || [];
+    const knownNames = new Set([singer, ...currentAliases]);
+    const sourcesToCheck = [singer, ...currentAliases];
+
+    sourcesToCheck.forEach((source) => {
+      const similar = findSimilarLeaders(source);
+      const validSimilar = similar.filter((item) => !knownNames.has(item.name));
+
+      if (validSimilar.length > 0) {
+        suggestions.push({
+          source: source,
+          primary: singer,
+          similar: validSimilar,
+        });
+        validSimilar.forEach((item) => knownNames.add(item.name));
+      }
+    });
+  });
+
+  let suggestionsHtml = "";
+  if (suggestions.length > 0) {
+    suggestionsHtml = "<div class='suggestions'>";
+    suggestions.forEach((item) => {
+      suggestionsHtml += `<p>Similar names to <strong>${item.source}</strong>: `;
+      item.similar.forEach((sim) => {
+        const label = params.debug
+          ? `${sim.name} (${sim.score.toFixed(3)})`
+          : sim.name;
+        suggestionsHtml += `<button onclick="addAlias('${item.primary}', '${sim.name}')">Include ${label}</button> `;
+      });
+      suggestionsHtml += "</p>";
+    });
+    suggestionsHtml += "</div>";
+  }
+
+  resultsDiv.innerHTML = `<p>${stats}${commonText}</p>${suggestionsHtml}`;
 
   if (singings.length === 0) {
+    resultsDiv.innerHTML += `<p>No shared singings found for ${singers.join(
+      ", "
+    )}.</p>`;
     return;
   }
 
@@ -83556,14 +83700,40 @@ function getSharedSingings() {
 
   // now create a bookmarkable permalink
   const bookmarkDiv = document.getElementById("bookmark");
+  const bookmarkParams = {
+    singers: [singer1, singer2, singer3].join(","),
+  };
+  if (params.debug) {
+    bookmarkParams.debug = params.debug;
+  }
+  if (Object.keys(aliasMap).length > 0) {
+    bookmarkParams.aliases = JSON.stringify(aliasMap);
+  }
   const bookmark =
     window.location.href.split("?")[0] +
     "?" +
-    new URLSearchParams({ singers: singers.join(",") });
+    new URLSearchParams(bookmarkParams);
 
   bookmarkDiv.innerHTML = `<p>
 <a href="${bookmark}">Permanent Link</a>
 </p>`;
+}
+
+function clearAll() {
+  document.getElementById("autocomplete-autoselect-singer-1").value = "";
+  document.getElementById("autocomplete-autoselect-singer-2").value = "";
+  document.getElementById("autocomplete-autoselect-singer-3").value = "";
+  document.getElementById("results").innerHTML = "";
+  document.getElementById("bookmark").innerHTML = "";
+
+  for (const key in aliasMap) {
+    delete aliasMap[key];
+  }
+
+  const url = new URL(window.location);
+  url.searchParams.delete("singers");
+  url.searchParams.delete("aliases");
+  window.history.pushState({}, "", url);
 }
 
 function suggest(query, populateResults) {
@@ -83582,7 +83752,7 @@ accessibleAutocomplete({
   id: id,
   minLength: 3,
   source: suggest,
-  defaultValue: queriedLeaders.length > 0 ? queriedLeaders[0] : "",
+  defaultValue: queriedSingers.length > 0 ? queriedSingers[0] : "",
 });
 element = document.querySelector("#tt-autoselect-singer-2");
 id = "autocomplete-autoselect-singer-2";
@@ -83592,7 +83762,7 @@ accessibleAutocomplete({
   id: id,
   minLength: 3,
   source: suggest,
-  defaultValue: queriedLeaders.length > 1 ? queriedLeaders[1] : "",
+  defaultValue: queriedSingers.length > 1 ? queriedSingers[1] : "",
 });
 element = document.querySelector("#tt-autoselect-singer-3");
 id = "autocomplete-autoselect-singer-3";
@@ -83602,8 +83772,26 @@ accessibleAutocomplete({
   id: id,
   minLength: 3,
   source: suggest,
-  defaultValue: queriedLeaders.length > 2 ? queriedLeaders[2] : "",
+  defaultValue: queriedSingers.length > 2 ? queriedSingers[2] : "",
 });
-if (queriedLeaders.length > 0) {
+if (queriedSingers.some((s) => s !== "")) {
   getSharedSingings();
 }
+
+function clearSuggestions() {
+  const suggestions = document.querySelector("#results .suggestions");
+  if (suggestions) {
+    suggestions.remove();
+  }
+}
+
+[
+  "autocomplete-autoselect-singer-1",
+  "autocomplete-autoselect-singer-2",
+  "autocomplete-autoselect-singer-3",
+].forEach((id) => {
+  const element = document.getElementById(id);
+  if (element) {
+    element.addEventListener("input", clearSuggestions);
+  }
+});
